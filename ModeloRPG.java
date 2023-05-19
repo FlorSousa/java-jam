@@ -4,14 +4,14 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleRPG extends JFrame implements ActionListener {
+public class ModeloRPG extends JFrame implements ActionListener {
     private JTextArea outputTextArea;
     private JTextField inputTextField;
     private JPanel imagePanel;
     private List<JLabel> imageLabels;
 
-    public SimpleRPG() {
-        super("Simple RPG");
+    public ModeloRPG() {
+        super("NOME DO JOGO");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setResizable(false);
@@ -85,7 +85,7 @@ public class SimpleRPG extends JFrame implements ActionListener {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new SimpleRPG();
+                new ModeloRPG();
             }
         });
     }

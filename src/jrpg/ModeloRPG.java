@@ -1,4 +1,4 @@
-package src;
+package src.jrpg;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,7 +12,7 @@ public class ModeloRPG extends JFrame implements ActionListener {
     private List<JLabel> imageLabels;
 
     public ModeloRPG() {
-        super("NOME DO JOGO");
+        super("MODELO RPG");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setResizable(false);

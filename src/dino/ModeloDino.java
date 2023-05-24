@@ -12,11 +12,10 @@ public class ModeloDino extends JFrame implements KeyListener {
     private int dinoWidth, dinoHeight;
     private Timer timer;
     private boolean isJumping;
-    private final int modifierJump = 200;
     private final int groundPosiY = 680;
-    private final double gravity = 2.3;
     private int contPulo = 1;
     private Image[] dinoSprites = new Image[3];
+    private Image[] things = new Image[3];
     BufferedImage spriteSheet;
     
     public ModeloDino() {
@@ -55,6 +54,7 @@ public class ModeloDino extends JFrame implements KeyListener {
     public void loadSprite(){
         try{
             spriteSheet = ImageIO.read(new File("src/dino/sheet_dino2.png"));
+            //thingsSpriteSheet = ImageIO.read(new File("src/dino/sheet_dino2.png"));
             dinoSprites[0] = spriteSheet.getSubimage(295, 54, 88, 95);
             dinoSprites[1] = spriteSheet.getSubimage(392, 54, 88, 95);
             dinoSprites[2] = spriteSheet.getSubimage(104, 54, 88, 95);
@@ -65,7 +65,6 @@ public class ModeloDino extends JFrame implements KeyListener {
     }
     public void paint(Graphics g) {
         super.paint(g);
-        System.out.println(this.dinoY);
         // Desenhar o recorte do dinossauro na tela
         this.check();
         g.drawImage(dinoImage, dinoX, dinoY, this);
@@ -81,7 +80,7 @@ public class ModeloDino extends JFrame implements KeyListener {
     }
 
     public void down(){
-        if(this.dinoY<680){
+        if(this.dinoY<groundPosiY){
             this.dinoY += 60;
             this.isJumping = false;
             return;
@@ -115,7 +114,7 @@ public class ModeloDino extends JFrame implements KeyListener {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            ModeloDino game = new ModeloDino();
+            new ModeloDino();
         });
     }
 }

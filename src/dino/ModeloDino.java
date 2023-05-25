@@ -1,19 +1,18 @@
 package src.dino;
+
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
 
-public class ModeloDino extends JFrame implements KeyListener {
+public class ModeloDino extends JPanel implements KeyListener {
     private Image dinoImage;
     private Image cactus_small;
     private Image cactus_large;
     private Image cactus_small_single;
     private Image cactus_large_single;
-
 
     private int dinoX, dinoY;
     private int dinoWidth, dinoHeight;
@@ -21,6 +20,7 @@ public class ModeloDino extends JFrame implements KeyListener {
     private boolean isJumping;
     private boolean isRunning;
     private boolean isDead;
+    private boolean changeLeg;
     private final int groundPosiY = 680;
     private int contPulo = 1;
     private Image[] dinoSprites = new Image[4];
@@ -32,33 +32,27 @@ public class ModeloDino extends JFrame implements KeyListener {
     BufferedImage flying_dino_sheet;
     BufferedImage ground_sheet;
     BufferedImage retry_sheet;
+    private Font font;
+    private String textoMorte = "APERTE ENTER PARA INICIAR";
 
-
-    
     public ModeloDino() {
-        setSize(800, 800);
-        setTitle("MODELO DINO");
-        setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
-        addKeyListener(this); 
-        
+        setPreferredSize(new Dimension(800, 800));
+        setFocusable(true);
+        addKeyListener(this);
+        font = new Font("Trebuchet MS", Font.BOLD, 24);
 
-        // Carregar a imagem do dinossauro
-        //dinoImage = Toolkit.getDefaultToolkit().getImage("src/dino/sheet_dino2.png");
         loadSprite();
         dinoImage = dinoSprites[3];
-        // Definir as coordenadas e o tamanho do recorte do dinossauro na imagem
         dinoX = 100;
         dinoY = 680;
         dinoWidth = 88;
         dinoHeight = 95;
         isJumping = false;
-        isRunning = false;
-        isDead = false;
-        isDead = false;
-        // Configurar o temporizador para chamar o método paint() a cada 16 milissegundos (aproximadamente 60 FPS)
-        timer = new Timer(22, new ActionListener() {
+        isRunning = true;
+        isDead = true;
+        changeLeg =  true;
+
+        timer = new Timer(55, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 repaint();
@@ -67,11 +61,12 @@ public class ModeloDino extends JFrame implements KeyListener {
         timer.start();
     }
 
-    public void setDinoSprite(int index){
+    public void setDinoSprite(int index) {
         dinoImage = dinoSprites[index];
     }
-    public void loadSprite(){
-        try{
+
+    public void loadSprite() {
+        try {
             spriteSheet = ImageIO.read(new File("src/dino/assets/sheet_dino2.png"));
             cactus_small_sheet = ImageIO.read(new File("src/dino/assets/Cactus_Small_Doube.png"));
             cactus_large_sheet = ImageIO.read(new File("src/dino/assets/Cactus_Large_Doube.png"));
@@ -84,77 +79,110 @@ public class ModeloDino extends JFrame implements KeyListener {
             dinoSprites[1] = spriteSheet.getSubimage(392, 54, 88, 95);
             dinoSprites[2] = spriteSheet.getSubimage(199, 54, 88, 95);
             dinoSprites[3] = spriteSheet.getSubimage(102, 54, 88, 95);
-            
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
-            
-        }
-    }
-    public void paint(Graphics g) {
-        super.paint(g);
-        this.animator();
-        if(!this.isDead)
-        {
-            System.out.println("RODANDO");
-            g.drawImage(dinoImage, dinoX, dinoY, this);
-            g.drawImage(ground_sheet,0,680,this);
-            return;
-        }
-        g.drawImage(retry_sheet, 360,360, this);
-    }
-    
-    public void animator(){
-        if(this.isJumping){
-            setDinoSprite(2);
-            jumping();
-        }else{
-            this.down();
         }
     }
 
-    public void down(){
-        if(this.dinoY<groundPosiY){
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        this.animator();
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+
+        g2d.drawImage(dinoImage, dinoX, dinoY, this);
+        g2d.drawImage(ground_sheet, 0, 680, this);
+        if(this.isDead){
+            g2d.drawImage(retry_sheet, 360, 360, this);
+            g2d.setFont(font);
+            FontMetrics fontMetrics = g2d.getFontMetrics();
+            int textWidth = fontMetrics.stringWidth(this.textoMorte);
+            int textHeight = fontMetrics.getHeight();
+            int x = (getWidth() - textWidth) / 2;
+            int y = (getHeight() - textHeight) / 2 + fontMetrics.getAscent();
+            g2d.drawString(textoMorte, x, y + 80);
+        }
+        Toolkit.getDefaultToolkit().sync(); // Adicionada esta linha
+    }
+
+    public void animator() {
+        if (this.isJumping) {
+            setDinoSprite(2);
+            jumping();
+        }
+        if (!this.isJumping && !this.isRunning) {
+            this.down();
+        }
+        if (this.isRunning) {
+            this.run();
+        }
+
+        if (this.isDead){
+            setDinoSprite(3);
+        }
+    }
+
+    public void run() {
+        int img = this.changeLeg ? 0:1;
+        setDinoSprite(img);
+        this.changeLeg = !this.changeLeg;
+    }
+
+    public void down() {
+        if (this.dinoY <= groundPosiY) {
             this.dinoY += 60;
             this.isJumping = false;
             return;
         }
         this.contPulo = 1;
-        setDinoSprite(3);
+        this.isRunning = true;
+        setDinoSprite(0);
     }
 
-    public void jumping(){
-        if(this.dinoY <= 280){
+    public void jumping() {
+        if (this.dinoY <= 280) {
             this.isJumping = false;
             return;
         }
-        this.dinoY -= 35;
+        this.dinoY -= 50;
     }
 
-    public void kill(){
+    public void kill() {
         this.isDead = true;
     }
 
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     public void keyPressed(KeyEvent e) {
-        // Verificar se a tecla pressionada é a tecla de espaço
-        if(e.getKeyCode() == KeyEvent.VK_ENTER && this.isDead){
+        if (e.getKeyCode() == KeyEvent.VK_ENTER && this.isDead) {
             this.isDead = false;
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            // Fazer o dinossauro pular
-            if(!this.isJumping && this.contPulo > 0){
+            if (!this.isJumping && this.contPulo > 0) {
                 this.isJumping = true;
+                this.isRunning = false;
                 this.contPulo = 0;
             }
         }
     }
 
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new ModeloDino();
+            JFrame frame = new JFrame("MODELO DINO");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setResizable(false);
+            ModeloDino dino = new ModeloDino(); // Crie uma instância da classe
+            frame.add(dino);
+            frame.pack();
+            frame.setVisible(true);
+            frame.addKeyListener(dino); // Adicione o KeyListener ao JFrame
         });
     }
 }

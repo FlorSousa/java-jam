@@ -8,6 +8,12 @@ import java.io.File;
 
 public class ModeloDino extends JFrame implements KeyListener {
     private Image dinoImage;
+    private Image cactus_small;
+    private Image cactus_large;
+    private Image cactus_small_single;
+    private Image cactus_large_single;
+
+
     private int dinoX, dinoY;
     private int dinoWidth, dinoHeight;
     private Timer timer;
@@ -17,6 +23,14 @@ public class ModeloDino extends JFrame implements KeyListener {
     private Image[] dinoSprites = new Image[3];
     private Image[] things = new Image[3];
     BufferedImage spriteSheet;
+    BufferedImage cactus_small_sheet;
+    BufferedImage cactus_large_sheet;
+    BufferedImage cactus_small_single_sheet;
+    BufferedImage cactus_large_single_sheet;
+    BufferedImage flying_dino_sheet;
+    BufferedImage ground_sheet;
+
+
     
     public ModeloDino() {
         setSize(800, 800);
@@ -53,8 +67,14 @@ public class ModeloDino extends JFrame implements KeyListener {
     }
     public void loadSprite(){
         try{
-            spriteSheet = ImageIO.read(new File("src/dino/sheet_dino2.png"));
-            //thingsSpriteSheet = ImageIO.read(new File("src/dino/sheet_dino2.png"));
+            spriteSheet = ImageIO.read(new File("src/dino/assets/sheet_dino2.png"));
+            cactus_small_sheet = ImageIO.read(new File("src/dino/assets/Cactus_Small_Doube.png"));
+            cactus_large_sheet = ImageIO.read(new File("src/dino/assets/Cactus_Large_Doube.png"));
+            cactus_small_single_sheet = ImageIO.read(new File("src/dino/assets/Cactus_Small_Single.png"));
+            cactus_large_single_sheet = ImageIO.read(new File("src/dino/assets/Cactus_Large_Single.png"));
+            flying_dino_sheet = ImageIO.read(new File("src/dino/assets/flying_dino.png"));
+            ground_sheet = ImageIO.read(new File("src/dino/assets/Ground.png"));
+            
             dinoSprites[0] = spriteSheet.getSubimage(295, 54, 88, 95);
             dinoSprites[1] = spriteSheet.getSubimage(392, 54, 88, 95);
             dinoSprites[2] = spriteSheet.getSubimage(104, 54, 88, 95);

@@ -1,5 +1,6 @@
 package src.dino;
 import java.awt.*;
+import java.awt.RenderingHints.Key;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -18,10 +19,11 @@ public class ModeloDino extends JFrame implements KeyListener {
     private int dinoWidth, dinoHeight;
     private Timer timer;
     private boolean isJumping;
+    private boolean isRunning;
+    private boolean isDead;
     private final int groundPosiY = 680;
     private int contPulo = 1;
-    private Image[] dinoSprites = new Image[3];
-    private Image[] things = new Image[3];
+    private Image[] dinoSprites = new Image[4];
     BufferedImage spriteSheet;
     BufferedImage cactus_small_sheet;
     BufferedImage cactus_large_sheet;
@@ -29,6 +31,7 @@ public class ModeloDino extends JFrame implements KeyListener {
     BufferedImage cactus_large_single_sheet;
     BufferedImage flying_dino_sheet;
     BufferedImage ground_sheet;
+    BufferedImage retry_sheet;
 
 
     
@@ -44,14 +47,16 @@ public class ModeloDino extends JFrame implements KeyListener {
         // Carregar a imagem do dinossauro
         //dinoImage = Toolkit.getDefaultToolkit().getImage("src/dino/sheet_dino2.png");
         loadSprite();
-        dinoImage = dinoSprites[0];
+        dinoImage = dinoSprites[3];
         // Definir as coordenadas e o tamanho do recorte do dinossauro na imagem
         dinoX = 100;
         dinoY = 680;
         dinoWidth = 88;
         dinoHeight = 95;
         isJumping = false;
-
+        isRunning = false;
+        isDead = false;
+        isDead = false;
         // Configurar o temporizador para chamar o método paint() a cada 16 milissegundos (aproximadamente 60 FPS)
         timer = new Timer(22, new ActionListener() {
             @Override
@@ -74,10 +79,12 @@ public class ModeloDino extends JFrame implements KeyListener {
             cactus_large_single_sheet = ImageIO.read(new File("src/dino/assets/Cactus_Large_Single.png"));
             flying_dino_sheet = ImageIO.read(new File("src/dino/assets/flying_dino.png"));
             ground_sheet = ImageIO.read(new File("src/dino/assets/Ground.png"));
-            
+            retry_sheet = ImageIO.read(new File("src/dino/assets/Retry.png"));
             dinoSprites[0] = spriteSheet.getSubimage(295, 54, 88, 95);
             dinoSprites[1] = spriteSheet.getSubimage(392, 54, 88, 95);
-            dinoSprites[2] = spriteSheet.getSubimage(104, 54, 88, 95);
+            dinoSprites[2] = spriteSheet.getSubimage(199, 54, 88, 95);
+            dinoSprites[3] = spriteSheet.getSubimage(102, 54, 88, 95);
+            
         }catch(Exception e){
             System.out.println(e.toString());
             
@@ -85,12 +92,18 @@ public class ModeloDino extends JFrame implements KeyListener {
     }
     public void paint(Graphics g) {
         super.paint(g);
-        // Desenhar o recorte do dinossauro na tela
-        this.check();
-        g.drawImage(dinoImage, dinoX, dinoY, this);
+        this.animator();
+        if(!this.isDead)
+        {
+            System.out.println("RODANDO");
+            g.drawImage(dinoImage, dinoX, dinoY, this);
+            g.drawImage(ground_sheet,0,680,this);
+            return;
+        }
+        g.drawImage(retry_sheet, 360,360, this);
     }
-
-    public void check(){
+    
+    public void animator(){
         if(this.isJumping){
             setDinoSprite(2);
             jumping();
@@ -106,7 +119,7 @@ public class ModeloDino extends JFrame implements KeyListener {
             return;
         }
         this.contPulo = 1;
-        setDinoSprite(0);
+        setDinoSprite(3);
     }
 
     public void jumping(){
@@ -117,10 +130,17 @@ public class ModeloDino extends JFrame implements KeyListener {
         this.dinoY -= 35;
     }
 
+    public void kill(){
+        this.isDead = true;
+    }
+
     public void keyTyped(KeyEvent e) {}
 
     public void keyPressed(KeyEvent e) {
         // Verificar se a tecla pressionada é a tecla de espaço
+        if(e.getKeyCode() == KeyEvent.VK_ENTER && this.isDead){
+            this.isDead = false;
+        }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             // Fazer o dinossauro pular
             if(!this.isJumping && this.contPulo > 0){

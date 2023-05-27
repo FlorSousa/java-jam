@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.util.HashMap;
 
 public class ModeloDino extends JPanel implements KeyListener {
     private Image dinoImage;
@@ -34,7 +35,7 @@ public class ModeloDino extends JPanel implements KeyListener {
     BufferedImage retry_sheet;
     private Font font;
     private String textoMorte = "APERTE ENTER PARA INICIAR";
-
+    private HashMap<Integer, Runnable> keys;
     public ModeloDino() {
         setPreferredSize(new Dimension(800, 800));
         setFocusable(true);
@@ -51,6 +52,9 @@ public class ModeloDino extends JPanel implements KeyListener {
         isRunning = true;
         isDead = true;
         changeLeg =  true;
+        keys = new HashMap<>();
+        keys.put(KeyEvent.VK_ENTER,()->this.start());
+        keys.put(KeyEvent.VK_SPACE,()->this.jump());
 
         timer = new Timer(55, new ActionListener() {
             @Override
@@ -137,6 +141,7 @@ public class ModeloDino extends JPanel implements KeyListener {
             this.isJumping = false;
             return;
         }
+        this.dinoY = 680;
         this.contPulo = 1;
         this.isRunning = true;
         setDinoSprite(0);
@@ -153,25 +158,26 @@ public class ModeloDino extends JPanel implements KeyListener {
     public void kill() {
         this.isDead = true;
     }
-
-    public void keyTyped(KeyEvent e) {
-    }
-
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ENTER && this.isDead) {
+    public void start(){
+        if (this.isDead) {
             this.isDead = false;
         }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            if (!this.isJumping && this.contPulo > 0) {
-                this.isJumping = true;
-                this.isRunning = false;
-                this.contPulo = 0;
-            }
-        }
     }
 
-    public void keyReleased(KeyEvent e) {
+    public void jump(){
+        if (!this.isJumping && this.contPulo > 0) {
+            this.isJumping = true;
+            this.isRunning = false;
+            this.contPulo = 0;
+        }
     }
+    public void keyTyped(KeyEvent e) {}
+
+    public void keyPressed(KeyEvent event){
+        keys.get(event.getKeyCode()).run();
+    }
+   
+    public void keyReleased(KeyEvent e) {}
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

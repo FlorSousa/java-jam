@@ -10,46 +10,61 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class ModeloDino extends JPanel implements KeyListener {
-    //private int LarguraTela = 800;
+    //janela
+    private int LarguraTela = 800;
     private int AlturaTela = 800;
+    private Timer timer;
+
+
+    //ground
     private int posiXGroundTela = 0; //dx1
     private int posiYGroundTela = 680; //dy1
+    private final int groundPosiY = 680;
     private int posiXRecorteGround = 0;
     private int posiYRecorteGround = 0;
     private int alturaImagemGround;
     private int larguraImagemGround;
+
+    //cenario
     private int velocidadeCenario = 25;
 
+    //procedural
+    private Random r = new Random();
+    private boolean existePteroVivo = false;
+    private int posixPtero = 760;
+
+    //pontuação
     private int pontos = 0;
     private int lastPontos = 0;
 
+    //sprites
     private Image dinoImage;
-    private Image cactus_small;
-    private Image cactus_large;
-    private Image cactus_small_single;
-    private Image cactus_large_single;
+    private Image[] dinoSprites = new Image[4];
+    private BufferedImage spriteSheet;
+    private BufferedImage cactus_small_sheet;
+    private BufferedImage cactus_large_sheet;
+    private BufferedImage cactus_small_single_sheet;
+    private BufferedImage cactus_large_single_sheet;
+    private BufferedImage flying_dino_sheet;
+    private BufferedImage ground_sheet;
+    private BufferedImage retry_sheet;
 
+    //dino
     private int dinoX, dinoY;
     private int dinoWidth, dinoHeight;
-    private Timer timer;
     private boolean isJumping;
     private boolean isRunning;
     private boolean isDead;
     private boolean changeLeg;
-    private final int groundPosiY = 680;
     private int contPulo = 1;
-    private Image[] dinoSprites = new Image[4];
-    BufferedImage spriteSheet;
-    BufferedImage cactus_small_sheet;
-    BufferedImage cactus_large_sheet;
-    BufferedImage cactus_small_single_sheet;
-    BufferedImage cactus_large_single_sheet;
-    BufferedImage flying_dino_sheet;
-    BufferedImage ground_sheet;
-    BufferedImage retry_sheet;
+    
+    //UI
     private Font font;
     private String textoMorte = "APERTE ENTER PARA INICIAR";
+
+    //hashmap com as teclas
     private HashMap<Integer, Runnable> keys;
+    
     public ModeloDino() {
         setPreferredSize(new Dimension(800, 800));
         setFocusable(true);
@@ -136,9 +151,16 @@ public class ModeloDino extends JPanel implements KeyListener {
         Toolkit.getDefaultToolkit().sync();
     }
 
+    public void renderPtero(Graphics2D g){
+        g.drawImage(flying_dino_sheet,posixPtero, 600,this);
+        posixPtero -= 0.8*velocidadeCenario;
+        if(posixPtero<0){
+            posixPtero = 800;
+        }
+    }
+
     public void randomElements(Graphics2D g2d){
-        Random r = new Random();
-        
+        renderPtero(g2d);
     }
 
     public void moveGround(){
@@ -197,6 +219,8 @@ public class ModeloDino extends JPanel implements KeyListener {
         if(!isDead){
             this.lastPontos = this.pontos;
             this.pontos = 0;
+            this.posixPtero = 800;
+            this.existePteroVivo = false;
         }
         this.isDead = true;
         

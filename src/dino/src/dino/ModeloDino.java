@@ -9,6 +9,17 @@ import java.io.File;
 import java.util.HashMap;
 
 public class ModeloDino extends JPanel implements KeyListener {
+    //private int LarguraTela = 800;
+    private int AlturaTela = 800;
+    private int posiXGroundTela = 0; //dx1
+    private int posiYGroundTela = 680; //dy1
+    private int posiXRecorteGround = 0;
+    private int posiYRecorteGround = 0;
+    private int alturaImagemGround;
+    private int larguraImagemGround;
+    private int velocidadeCenario = 25;
+
+
     private Image dinoImage;
     private Image cactus_small;
     private Image cactus_large;
@@ -78,6 +89,8 @@ public class ModeloDino extends JPanel implements KeyListener {
             cactus_large_single_sheet = ImageIO.read(new File("src/dino/assets/Cactus_Large_Single.png"));
             flying_dino_sheet = ImageIO.read(new File("src/dino/assets/flying_dino.png"));
             ground_sheet = ImageIO.read(new File("src/dino/assets/Ground.png"));
+            alturaImagemGround = ground_sheet.getHeight();
+            larguraImagemGround = ground_sheet.getWidth();
             retry_sheet = ImageIO.read(new File("src/dino/assets/Retry.png"));
             dinoSprites[0] = spriteSheet.getSubimage(295, 54, 88, 95);
             dinoSprites[1] = spriteSheet.getSubimage(392, 54, 88, 95);
@@ -98,7 +111,7 @@ public class ModeloDino extends JPanel implements KeyListener {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
         g2d.drawImage(dinoImage, dinoX, dinoY, this);
-        g2d.drawImage(ground_sheet, 0, 680, this);
+        g2d.drawImage(ground_sheet,posiXGroundTela, posiYGroundTela, AlturaTela,posiYGroundTela+alturaImagemGround, posiXRecorteGround, posiYRecorteGround, posiXRecorteGround+800, alturaImagemGround, this);
         if(this.isDead){
             g2d.drawImage(retry_sheet, 360, 360, this);
             g2d.setFont(font);
@@ -108,8 +121,23 @@ public class ModeloDino extends JPanel implements KeyListener {
             int x = (getWidth() - textWidth) / 2;
             int y = (getHeight() - textHeight) / 2 + fontMetrics.getAscent();
             g2d.drawString(textoMorte, x, y + 80);
+        }else{
+            moveGround();
+            randomElements(g2d);
         }
-        Toolkit.getDefaultToolkit().sync(); // Adicionada esta linha
+        Toolkit.getDefaultToolkit().sync();
+    }
+
+    public void randomElements(Graphics2D g2d){
+
+    }
+
+    public void moveGround(){
+        if((larguraImagemGround - posiXRecorteGround)>800){
+            posiXRecorteGround+=velocidadeCenario;
+        }else{
+            posiXRecorteGround = 0;
+        }
     }
 
     public void animator() {

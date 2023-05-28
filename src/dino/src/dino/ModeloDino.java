@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Random;
 
 public class ModeloDino extends JPanel implements KeyListener {
     //private int LarguraTela = 800;
@@ -19,6 +20,8 @@ public class ModeloDino extends JPanel implements KeyListener {
     private int larguraImagemGround;
     private int velocidadeCenario = 25;
 
+    private int pontos = 0;
+    private int lastPontos = 0;
 
     private Image dinoImage;
     private Image cactus_small;
@@ -66,6 +69,7 @@ public class ModeloDino extends JPanel implements KeyListener {
         keys = new HashMap<>();
         keys.put(KeyEvent.VK_ENTER,()->this.start());
         keys.put(KeyEvent.VK_SPACE,()->this.jump());
+        keys.put(KeyEvent.VK_ESCAPE,()->this.kill());
 
         timer = new Timer(55, new ActionListener() {
             @Override
@@ -121,7 +125,11 @@ public class ModeloDino extends JPanel implements KeyListener {
             int x = (getWidth() - textWidth) / 2;
             int y = (getHeight() - textHeight) / 2 + fontMetrics.getAscent();
             g2d.drawString(textoMorte, x, y + 80);
+            g2d.drawString("Sua ultima pontuação:" + String.valueOf(this.lastPontos), x+20, y+120);
+
         }else{
+            g2d.setFont(font);
+            g2d.drawString("pontuação:" + String.valueOf(this.pontos), 13, 50);
             moveGround();
             randomElements(g2d);
         }
@@ -129,12 +137,14 @@ public class ModeloDino extends JPanel implements KeyListener {
     }
 
     public void randomElements(Graphics2D g2d){
-
+        Random r = new Random();
+        
     }
 
     public void moveGround(){
         if((larguraImagemGround - posiXRecorteGround)>800){
             posiXRecorteGround+=velocidadeCenario;
+            this.pontos+=5;
         }else{
             posiXRecorteGround = 0;
         }
@@ -184,7 +194,12 @@ public class ModeloDino extends JPanel implements KeyListener {
     }
 
     public void kill() {
+        if(!isDead){
+            this.lastPontos = this.pontos;
+            this.pontos = 0;
+        }
         this.isDead = true;
+        
     }
     public void start(){
         if (this.isDead) {

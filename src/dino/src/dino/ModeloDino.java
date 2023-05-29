@@ -33,6 +33,7 @@ public class ModeloDino extends JPanel implements KeyListener {
     private boolean existePteroVivo = false;
     private boolean exibirPtero = false;
     private int posixPtero = 760;
+    private int posiYPtero;
 
     //pontuação
     private int pontos = 0;
@@ -151,11 +152,10 @@ public class ModeloDino extends JPanel implements KeyListener {
         Toolkit.getDefaultToolkit().sync();
     }
 
-    public void checkDinoPosition(){
+    public void dinoCollision(){
         
     }
 
-    //colocar algo para impedir que seja chamado a toda geração de quadros - timer?
     public double probabilidadeAparecer(int tempo){
         double probabilidade =0;
         if((System.currentTimeMillis() - this.tempoComparativo)>=tempo){
@@ -165,14 +165,18 @@ public class ModeloDino extends JPanel implements KeyListener {
         }
         return probabilidade;
     }
+    public void setYPtero(){
+        this.posiYPtero = r.nextBoolean() ? 600 : 450;
+    }
 
     public void renderPtero(Graphics2D g){
         if(this.pontos >= 350 && !this.existePteroVivo && this.probabilidadeAparecer(2000) > 0.7){
             this.exibirPtero = true;
+            this.setYPtero();
         }
 
         if(exibirPtero){
-            g.drawImage(flying_dino_sheet,posixPtero, 600,this);
+            g.drawImage(flying_dino_sheet,posixPtero, this.posiYPtero,this);
             posixPtero -= 0.8*velocidadeCenario;
             if(posixPtero<(0-flying_dino_sheet.getWidth())){
                 posixPtero = 800;

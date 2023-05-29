@@ -31,6 +31,7 @@ public class ModeloDino extends JPanel implements KeyListener {
     //procedural
     private Random r = new Random();
     private boolean existePteroVivo = false;
+    private boolean exibirPtero = false;
     private int posixPtero = 760;
 
     //pontuação
@@ -64,7 +65,7 @@ public class ModeloDino extends JPanel implements KeyListener {
 
     //hashmap com as teclas
     private HashMap<Integer, Runnable> keys;
-    
+
     public ModeloDino() {
         setPreferredSize(new Dimension(800, 800));
         setFocusable(true);
@@ -128,7 +129,6 @@ public class ModeloDino extends JPanel implements KeyListener {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-
         g2d.drawImage(dinoImage, dinoX, dinoY, this);
         g2d.drawImage(ground_sheet,posiXGroundTela, posiYGroundTela, AlturaTela,posiYGroundTela+alturaImagemGround, posiXRecorteGround, posiYRecorteGround, posiXRecorteGround+800, alturaImagemGround, this);
         if(this.isDead){
@@ -151,11 +151,32 @@ public class ModeloDino extends JPanel implements KeyListener {
         Toolkit.getDefaultToolkit().sync();
     }
 
+    public void checkDinoPosition(){
+        
+    }
+
+    //colocar algo para impedir que seja chamado a toda geração de quadros - timer?
+    public double probabilidadeAparecer(){
+        double nSorteado1 = r.nextDouble(1);
+        double nSorteado2 = r.nextDouble(nSorteado1,1);
+        return (nSorteado1/nSorteado2)-0.1;
+    }
+
     public void renderPtero(Graphics2D g){
-        g.drawImage(flying_dino_sheet,posixPtero, 600,this);
-        posixPtero -= 0.8*velocidadeCenario;
-        if(posixPtero<0){
-            posixPtero = 800;
+        if(this.pontos >= 350 && !this.existePteroVivo && this.probabilidadeAparecer() > 0.7){
+            this.exibirPtero = true;
+        }
+
+        if(exibirPtero){
+            g.drawImage(flying_dino_sheet,posixPtero, 600,this);
+            posixPtero -= 0.8*velocidadeCenario;
+            if(posixPtero<(0-flying_dino_sheet.getWidth())){
+                posixPtero = 800;
+                this.existePteroVivo = false;
+                this.exibirPtero = false;
+                return;
+            }
+            this.existePteroVivo = true;
         }
     }
 

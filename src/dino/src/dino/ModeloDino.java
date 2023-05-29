@@ -14,7 +14,7 @@ public class ModeloDino extends JPanel implements KeyListener {
     private int LarguraTela = 800;
     private int AlturaTela = 800;
     private Timer timer;
-
+    private long tempoComparativo = System.currentTimeMillis();
 
     //ground
     private int posiXGroundTela = 0; //dx1
@@ -156,14 +156,18 @@ public class ModeloDino extends JPanel implements KeyListener {
     }
 
     //colocar algo para impedir que seja chamado a toda geração de quadros - timer?
-    public double probabilidadeAparecer(){
-        double nSorteado1 = r.nextDouble(1);
-        double nSorteado2 = r.nextDouble(nSorteado1,1);
-        return (nSorteado1/nSorteado2)-0.1;
+    public double probabilidadeAparecer(int tempo){
+        double probabilidade =0;
+        if((System.currentTimeMillis() - this.tempoComparativo)>=tempo){
+            double nSorteado = r.nextDouble(1);
+            probabilidade = (nSorteado/ r.nextDouble(nSorteado,1))-0.1;
+            this.tempoComparativo = System.currentTimeMillis();
+        }
+        return probabilidade;
     }
 
     public void renderPtero(Graphics2D g){
-        if(this.pontos >= 350 && !this.existePteroVivo && this.probabilidadeAparecer() > 0.7){
+        if(this.pontos >= 350 && !this.existePteroVivo && this.probabilidadeAparecer(2000) > 0.7){
             this.exibirPtero = true;
         }
 
